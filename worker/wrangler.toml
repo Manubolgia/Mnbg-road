@@ -1,0 +1,18 @@
+name = "mainline-rooms"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# The rules live in ../web/js/rules so the browser and the server run exactly
+# the same code. Wrangler bundles them in.
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+# SQLite-backed Durable Objects are available on the free plan.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]
+
+[observability]
+enabled = true

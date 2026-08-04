@@ -1,0 +1,62 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/test-rules.mjs
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Bake the room server URL in from the repository variable
+      # MAINLINE_SERVER (Settings -> Secrets and variables -> Actions -> Variables).
+      - name: Point the app at the room server
+        env:
+          SERVER: ${{ vars.MAINLINE_SERVER }}
+        run: |
+          if [ -n "$SERVER" ]; then
+            node -e '
+              const fs = require("fs");
+              const file = "web/index.html";
+              const html = fs.readFileSync(file, "utf8").replace(
+                /window\.MAINLINE_SERVER = .*;/,
+                "window.MAINLINE_SERVER = " + JSON.stringify(process.env.SERVER) + ";"
+              );
+              fs.writeFileSync(file, html);
+            '
+            echo "Room server set to $SERVER"
+          else
+            echo "No MAINLINE_SERVER variable set; shipping with solo play only."
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+      - id: pages
+        uses: actions/deploy-pages@v4

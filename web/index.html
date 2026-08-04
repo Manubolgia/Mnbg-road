@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MAINLINE</title>
+<meta name="description" content="A roll-and-draw route building game for up to ten players, one phone each.">
+<meta name="theme-color" content="#16181d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MAINLINE">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icons/icon-180.png">
+<link rel="stylesheet" href="./styles.css">
+<script>
+  // Deploy step: point this at your Cloudflare Worker, e.g.
+  // window.MAINLINE_SERVER = 'https://mainline-rooms.example.workers.dev';
+  window.MAINLINE_SERVER = '';
+</script>
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <button id="brand" class="brand" type="button">MAINLINE</button>
+      <div id="status" class="status"></div>
+    </header>
+    <main id="screen" class="screen"></main>
+  </div>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
