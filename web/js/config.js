@@ -1,9 +1,9 @@
 // Where the room server lives.
 //
-// Set `window.MAINLINE_SERVER` in index.html at deploy time (the Cloudflare
-// Worker URL, e.g. https://mainline-rooms.<account>.workers.dev). Players can
-// also point the app somewhere else from the settings panel, which is handy
-// for testing against a local `wrangler dev`.
+// `window.MAINLINE_SERVER` is set in index.html; the deploy workflow rewrites
+// that line from the MAINLINE_SERVER repository variable. To test against a
+// local `wrangler dev`, set the `mainline.server` localStorage key by hand:
+//   localStorage.setItem('mainline.server', 'http://localhost:8787')
 
 const STORAGE_KEY = 'mainline.server';
 
@@ -12,11 +12,6 @@ export function serverUrl() {
   if (override) return override.replace(/\/$/, '');
   const baked = (typeof window !== 'undefined' && window.MAINLINE_SERVER) || '';
   return baked.replace(/\/$/, '');
-}
-
-export function setServerUrl(url) {
-  if (url) localStorage.setItem(STORAGE_KEY, url.trim().replace(/\/$/, ''));
-  else localStorage.removeItem(STORAGE_KEY);
 }
 
 export function hasServer() {

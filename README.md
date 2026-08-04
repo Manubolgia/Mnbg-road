@@ -76,8 +76,13 @@ node tools/test-rules.mjs
 cd worker && npm install && npx wrangler dev
 ```
 
-With `wrangler dev` running, open the app, go to **Settings**, and set the game
-server to the URL wrangler prints (e.g. `http://localhost:8787`).
+The app points at the deployed Worker out of the box. With `wrangler dev`
+running, aim it at your local server from the browser console instead:
+
+```js
+localStorage.setItem('mainline.server', 'http://localhost:8787')  // then reload
+localStorage.removeItem('mainline.server')                        // back to live
+```
 
 ---
 
@@ -100,18 +105,24 @@ themselves after twelve hours of inactivity.
 ### 2. The app (GitHub Pages)
 
 In the repository settings, under **Pages**, set the source to **GitHub
-Actions**. Then under **Secrets and variables → Actions → Variables**, add a
-repository variable:
+Actions**.
+
+The Worker URL is committed in `web/index.html` as `window.MAINLINE_SERVER`, so
+the app ships pointing at the right server with nothing for players to
+configure. To deploy against a different Worker, either edit that line or set a
+repository variable under **Secrets and variables → Actions → Variables**:
 
 | Name | Value |
 |---|---|
 | `MAINLINE_SERVER` | the Worker URL from step 1 |
 
 Push to `main`. The workflow in `.github/workflows/deploy.yml` runs the rule
-tests, bakes the Worker URL into `index.html`, and publishes `web/` to Pages.
+tests, overwrites the `window.MAINLINE_SERVER` line when that variable is set,
+and publishes `web/` to Pages.
 
-If you skip the variable the app still deploys and solo play works; players can
-fill the server URL in themselves under **Settings**.
+To test against a local `wrangler dev`, override the URL from the browser
+console — `localStorage.setItem('mainline.server', 'http://localhost:8787')` —
+and `localStorage.removeItem('mainline.server')` to go back.
 
 ### 3. Installing on a phone
 

@@ -6,7 +6,7 @@ import { scoreBoard, NETWORK_TABLE } from './rules/scoring.js';
 import { validateRound, ROUNDS } from './rules/game.js';
 import { renderBoard, boardMarkup, VIEWBOX } from './ui/boardview.js';
 import { tileSVG } from './ui/tilesvg.js';
-import { serverUrl, setServerUrl, hasServer, playerId, playerName, setPlayerName } from './config.js';
+import { serverUrl, hasServer, playerId, playerName, setPlayerName } from './config.js';
 import { SoloSession, OnlineSession } from './session.js';
 
 const MAX_PLAYERS = 10;
@@ -192,14 +192,13 @@ function renderHome() {
           <input id="input-code" class="input mono" maxlength="6" placeholder="CODE" value="${esc(ui.draftCode)}" autocapitalize="characters" spellcheck="false">
           <button class="btn" data-act="join" ${server ? '' : 'disabled'}>Join</button>
         </div>
-        ${server ? '' : '<p class="note">No game server configured yet. Solo play works offline; open Settings to point the app at your server.</p>'}
+        ${server ? '' : '<p class="note">This build has no room server configured, so online play is unavailable. Solo play works offline.</p>'}
       </div>
 
       <div class="rule"></div>
 
       <button class="btn btn-ghost" data-act="solo">Play solo</button>
       <button class="btn btn-ghost" data-act="rules">How to play</button>
-      <button class="btn btn-ghost" data-act="settings">Settings</button>
     </section>
   `;
 }
@@ -400,24 +399,6 @@ function renderRules() {
     </div>`;
 }
 
-function renderSettings() {
-  return `
-    <div class="sheet">
-      <div class="sheet-head">
-        <h2 class="section-title">Settings</h2>
-        <button class="btn btn-mini" data-act="close">Close</button>
-      </div>
-      <div class="stack">
-        <label class="field">
-          <span class="field-label">Game server</span>
-          <input id="input-server" class="input mono" placeholder="https://…workers.dev" value="${esc(serverUrl())}" spellcheck="false" autocapitalize="off">
-        </label>
-        <p class="note">The Cloudflare Worker that hosts the rooms. Leave it blank to play solo only.</p>
-        <button class="btn btn-primary" data-act="save-server">Save</button>
-      </div>
-    </div>`;
-}
-
 function renderViewer(state) {
   const player = state.players.find((p) => p.id === ui.viewing);
   if (!player) return '';
@@ -462,7 +443,6 @@ function render() {
 
   let overlay = '';
   if (ui.panel === 'rules') overlay = renderRules();
-  else if (ui.panel === 'settings') overlay = renderSettings();
   else if (ui.panel === 'view') overlay = renderViewer(state);
 
   root.innerHTML =
@@ -566,20 +546,10 @@ const ACTIONS = {
     ui.panel = 'rules';
     render();
   },
-  settings: () => {
-    ui.panel = 'settings';
-    render();
-  },
   close: () => {
     ui.panel = null;
     ui.viewing = null;
     render();
-  },
-  'save-server': () => {
-    const input = document.getElementById('input-server');
-    setServerUrl(input.value);
-    ui.panel = null;
-    say('Server saved.');
   },
 };
 
