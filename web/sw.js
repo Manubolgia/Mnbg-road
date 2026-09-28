@@ -1,7 +1,7 @@
 // Cache the shell so the game installs and opens offline. Solo play needs no
 // network at all; rooms fall back to the live server when it is reachable.
 
-const VERSION = 'mainline-v3';
+const VERSION = 'mainline-v4';
 const SHELL = [
   './',
   './index.html',

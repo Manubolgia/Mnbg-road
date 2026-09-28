@@ -175,6 +175,8 @@ function chip(text, cls = '') {
 // The MNBG tape library runs its games in a frame named "mnbglibrary"; inside
 // it, the start screen offers a way back.
 const IN_LIBRARY = window.parent !== window && window.name === 'mnbglibrary';
+// Tell the library we have our own way back, so it can hide its eject tab.
+if (IN_LIBRARY) window.parent.postMessage({ type: 'mnbglibrary:hello', exit: true }, location.origin);
 
 function renderHome() {
   const server = hasServer();
