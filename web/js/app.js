@@ -172,6 +172,10 @@ function chip(text, cls = '') {
   return `<span class="chip ${cls}">${esc(text)}</span>`;
 }
 
+// The MNBG tape library runs its games in a frame named "mnbglibrary"; inside
+// it, the start screen offers a way back.
+const IN_LIBRARY = window.parent !== window && window.name === 'mnbglibrary';
+
 function renderHome() {
   const server = hasServer();
   return `
@@ -199,6 +203,7 @@ function renderHome() {
 
       <button class="btn btn-ghost" data-act="solo">Play solo</button>
       <button class="btn btn-ghost" data-act="rules">How to play</button>
+      ${IN_LIBRARY ? '<button class="btn btn-ghost" data-act="library">Back to the library</button>' : ''}
     </section>
   `;
 }
@@ -546,6 +551,7 @@ const ACTIONS = {
     ui.panel = 'rules';
     render();
   },
+  library: () => window.parent.postMessage({ type: 'mnbglibrary:eject' }, location.origin),
   close: () => {
     ui.panel = null;
     ui.viewing = null;
